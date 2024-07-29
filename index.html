@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>GitHub Project Visualizer for d3-shape</title>
+    <script src="/lib/d3/d3.v7.min.js"></script>
+    <script src="/lib/d3-svg-annotation/d3-svg-annotation.min.js"></script>
+</head>
+
+<style>
+    body {
+        font-family: Arial, Helvetica, sans-serif;
+    }
+
+    body.intro-messaging {
+        overflow: hidden;
+    }
+
+    main {
+        max-width: 1000px;
+        margin: 0 auto;
+    }
+
+    h1 {
+        font-size: 30px;
+        margin-bottom: 4px; 
+    }
+
+    button {
+        padding: 10px 5px;
+        border-radius: 4px;
+        background-color: #005c9c;
+        color: #ffffff;
+        font-weight: 500;
+        border: 1px solid #012456;
+        cursor: pointer
+    }
+
+    button:disabled {
+        opacity: 0.5;
+        cursor: not-allowed
+    }
+
+    code {
+        font-family: monospace;
+        color: #ef7234
+    }
+
+    svg#data-viz {
+        width: 1000px;
+        height: 1000px;
+        background-color: #dad8d8;
+    }
+
+    svg#messaging-viz {
+        width: 1000px;
+        height: 1000px;
+    }
+
+    #messaging-overlay {
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        background-color: rgba(0, 0, 0, 0.6);
+    }
+
+    body.intro-messaging #messaging-overlay {
+        display: block;
+    }
+
+    body.completed-messaging #messaging-overlay {
+        display: none;
+    }
+
+    .messaging-container {
+        position: relative;
+        max-width: 1000px;
+        margin: 0 auto;
+    }
+
+    .messaging-control {
+        display: flex;
+        gap: 10px;
+        position: absolute;
+        top: 55px;
+        left: 50%;
+        transform: translateX(-50%);
+    }
+
+    .messaging-control button.continue-message {
+        position: relative;
+        width: 200px;
+        background-color: #ef7234;
+    }
+
+    .params-control {
+        display: grid;
+        grid-template-columns: max-content auto max-content;
+        justify-items: center;
+        align-items: center;
+        gap: 20px;
+        margin: 20px 0;
+    }
+
+    .params-control label {
+        text-align: center;
+    }
+
+    .params-control button {
+        padding: 4px;
+    }
+
+    .params-control input.timeline {
+        display: block;
+        margin: 0;
+        margin-top: 10px;
+    }
+
+    .params-control datalist {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        writing-mode: vertical-lr;
+    }
+
+    .params-control datalist option {
+        font-size: 10px;
+        width: 10px;
+        padding: 0
+    }
+
+    .min-circle-radius-param {
+        font-size: 16px;
+        display: block;
+        text-align: right;
+        margin-top: 4px;
+        color: #005c9c;
+    }
+
+    .min-circle-radius-param input[type=number].min-circle-radius {
+        width: 40px;
+    }
+
+    .git-tag-header {
+        font-size: 28px;
+        font-family: monospace;
+        text-align: center;
+        margin: 0;
+    }
+
+    .annotation-note {
+        font-family: Arial, Helvetica, sans-serif;
+    }
+
+    .show-annotation-bg .annotation-note-bg {
+        fill: #005c9c;
+        fill-opacity: 0.5;
+        stroke: #ef7234;
+        stroke-width: 4px;
+        stroke-opacity: 0.6;
+        stroke-linejoin: round;
+        stroke-linecap: round;
+    }
+
+    .show-annotation-bg 
+    
+    .annotation-note-title {
+        font-size: 20px;
+        fill: #ffffff;
+        text-decoration: underline;
+    }
+
+    .annotation-note-label {
+        font-size: 16px;
+        fill: #ffffff;
+    } 
+
+    .highlight-bubble {
+        position: absolute;
+        top: -5px;
+        left: -5px;
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        background-color: #2abdff;
+        opacity: 0.75;
+        animation: highlight 1s ease-in-out infinite;
+    }
+    
+    @keyframes highlight {
+        75%, 100% {
+        transform: scale(2);
+        opacity: 0;
+    }
+}
+</style>
+
+<body>
+    <main>
+        <h1 class="header">
+            GitHub Codebase Visualizer for <code>d3/d3-shape</code>
+        </h1>
+
+        <a href="https://github.com/d3/d3-shape/tree/main" target="_blank">
+            (GitHub Repository Link)
+        </a>
+
+        <div class="params-control">
+            <button class="previous-scene">⬅️ Previous Git Tag </button>
+            <label>
+                <button class="play-timeline">▶️ Play Git Tag Timeline</button>
+                <input type="range" class="timeline" list="tag-markers" value="0" min="0" />
+                <datalist id="tag-markers"></datalist>
+            </label>
+            <button class="next-scene">Next Git Tag ➡️</button>
+        </div>
+
+        <h2 class="git-tag-header"></h2>
+
+        <label class="min-circle-radius-param">
+            Show circles with radius above:
+            <input type="number" value="15" class="min-circle-radius" />
+        </label>
+
+        <svg id="data-viz"></svg>
+        </div>
+    </main>
+
+    <div id="messaging-overlay">
+        <div class="messaging-container">
+            <div class="messaging-control">
+                <button class="continue-message highlight-animation"><div class="highlight-bubble"></div>Continue</button>
+            </div>
+            <svg id="messaging-viz"></svg>
+        </div>
+    </div>
+        
+    <script type="module" src="index.js"></script>
+</body>
+
+</html>
